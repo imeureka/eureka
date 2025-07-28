@@ -12,6 +12,7 @@ import ExplodeButton from '@/components/common/Button/ExplodeButton';
 import TimelineAnimation from '@/components/TimelineAnimation';
 import ArticleList from '@/components/ArticleList';
 import { useArticles } from '@/hooks/useArticles';
+import ParticleBackground from '@/components/ParticleBackground';
 
 gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
 
@@ -151,17 +152,20 @@ export default function Home() {
   const currentArticlesContent = articlesContent[currentLanguage];
 
   return (
-    <main ref={container} className="flex flex-col items-start relative overflow-hidden pt-24">
+    <main ref={container} className="flex flex-col items-start relative overflow-hidden pt-16 md:pt-24">
       <Header currentLanguage={currentLanguage} onLanguageToggle={toggleLanguage} />
 
       {/* 홈 섹션 (스크롤 타겟용 ID 추가) */}
       <section id="home" className="w-full">
+        <ParticleBackground />
         <TimelineAnimation />
+
+        {/* 데스크톱용 SVG */}
         <svg
           width="1202"
           height="805"
           viewBox="0 0 1202 805"
-          className="absolute top-0 left-0"
+          className="absolute top-0 left-0 hidden md:block"
           fill="none"
           xmlns="http://www.w3.org/2000/svg">
           <path
@@ -172,22 +176,45 @@ export default function Home() {
           />
         </svg>
 
-        <div className="z-50 max-w-5xl w-full md:flex-row items-center md:justify-start gap-16 mx-auto relative mt-5 min-h-[500px]">
-          <div className="text-black" ref={textRef}>
+        {/* 모바일용 간단한 SVG */}
+        <svg
+          width="400"
+          height="300"
+          viewBox="0 0 1202 805"
+          className="absolute top-0 left-0 md:hidden opacity-30"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M-260 777C-222.167 659.203 -92.8211 438.938 121.897 500.254C390.295 576.898 360.06 588.831 449.836 582.865C597.943 516.776 488.444 369.454 425.648 293.268C362.851 217.083 336.046 138.781 346.57 100.51C362.851 41.3054 420.531 13.7685 644.273 134.472C823.267 231.035 930.968 280.571 962.444 293.268C1010.2 308.872 1141 341 1170 273.5C1196.66 211.441 1094.8 58.5393 858.5 -64"
+            stroke="#FFC28D"
+            strokeWidth="40"
+            strokeLinecap="round"
+          />
+        </svg>
+
+        <div className="z-50 max-w-5xl w-full px-4 md:px-0 md:flex-row items-center md:justify-start gap-8 md:gap-16 mx-auto relative mt-5 min-h-[00px] md:min-h-[500px]">
+          {/* 텍스트 콘텐츠 */}
+          <div className="text-black w-full" ref={textRef}>
+            {/* 제목 */}
             <h1
               ref={titleRef}
-              className="text-6xl font-extrabold mb-8 leading-tight whitespace-pre-line h-[200px] flex items-center">
+              className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-extrabold mb-6 md:mb-8 leading-tight whitespace-pre-line min-h-[120px] md:h-[200px] flex items-center text-left">
               {currentContent.title}
             </h1>
-          </div>
-          <div className="md:w-1/2 md:ml-[50%]">
-            <p
-              ref={descriptionRef}
-              className="text-lg font-semibold leading-relaxed mb-6 max-w-lg min-h-[180px] flex items-start">
-              {currentContent.description}
-            </p>
-            <div ref={buttonRef}>
-              <ExplodeButton onClick={() => window.open('https://github.com/imeureka', '_blank')}>GITHUB</ExplodeButton>
+
+            {/* 설명과 버튼을 모바일에서는 중앙 정렬 */}
+            <div className="w-full md:w-1/2 md:ml-[50%] flex flex-col items-start">
+              <p
+                ref={descriptionRef}
+                className="text-sm sm:text-base md:text-lg font-semibold leading-relaxed mb-6 max-w-lg min-h-[120px] md:min-h-[180px] text-left">
+                {currentContent.description}
+              </p>
+
+              <div ref={buttonRef} className="flex justify-start">
+                <ExplodeButton onClick={() => window.open('https://github.com/imeureka', '_blank')}>
+                  GITHUB
+                </ExplodeButton>
+              </div>
             </div>
           </div>
         </div>
@@ -204,32 +231,34 @@ export default function Home() {
       </section>
 
       {/* 아티클 섹션 */}
-      <section ref={articlesSectionRef} id="articles" className="py-20 z-40 w-full">
-        <div className="max-w-7xl mx-auto px-6">
+      <section ref={articlesSectionRef} id="articles" className="py-12 md:py-20 z-40 w-full">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
           {/* 섹션 헤더 */}
-          <div className="text-center mb-12">
-            <h2 ref={articlesTitleRef} className="text-4xl font-extrabold text-gray-900 mb-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 ref={articlesTitleRef} className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
               {currentArticlesContent.title}
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">{currentArticlesContent.subtitle}</p>
+            <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto px-4 md:px-0">
+              {currentArticlesContent.subtitle}
+            </p>
           </div>
 
           {/* 아티클 리스트 (대표 글 3개) */}
           {articlesLoading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+            <div className="flex justify-center items-center h-32 md:h-64">
+              <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-b-2 border-orange-500"></div>
             </div>
           ) : (
             <ArticleList articles={articles} currentLanguage={currentLanguage} showSearch={false} variant="grid" />
           )}
 
           {/* 더 보기 버튼 */}
-          <div className="text-center mt-12">
+          <div className="text-center mt-8 md:mt-12">
             <a
               href="/articles"
-              className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-orange-400 to-pink-400 text-white rounded-full hover:from-orange-500 hover:to-pink-500 transition-all duration-300 transform hover:scale-105 font-semibold">
+              className="inline-flex items-center justify-center px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-orange-400 to-pink-400 text-white rounded-full hover:from-orange-500 hover:to-pink-500 transition-all duration-300 transform hover:scale-105 font-semibold text-sm md:text-base">
               {currentLanguage === 'ko' ? '모든 아티클 보기' : 'View All Articles'}
-              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 md:w-5 md:h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </a>
