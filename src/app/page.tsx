@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -10,41 +10,149 @@ import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin';
 import CardGallery from '@/components/CardGallery';
 import ExplodeButton from '@/components/common/Button/ExplodeButton';
 import TimelineAnimation from '@/components/TimelineAnimation';
+import ArticleList from '@/components/ArticleList';
+import { useArticles } from '@/hooks/useArticles';
 
 gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+
+type Language = 'en' | 'ko';
+
+interface TextContent {
+  title: string;
+  description: string;
+  buttonText: string;
+}
+
+interface Translations {
+  en: TextContent;
+  ko: TextContent;
+}
+
+const translations: Translations = {
+  en: {
+    title: 'Beyond Code\nToward Better Lives',
+    description:
+      "I am a human-centered front-end developer. Through development, I strive to ensure that no one is left behind by technology, creating web experiences that make everyone's lives a little better. Beyond interfaces, I pursue technologies that understand the context of people.",
+    buttonText: 'GITHUB',
+  },
+  ko: {
+    title: '코드를 넘어\n더 나은 삶을 향해',
+    description:
+      '저는 사람 중심의 프론트엔드 개발자입니다. 개발을 통해 기술로부터 소외되는 사람이 없도록, 모든 사람의 삶이 조금 더 나아지는 웹 경험을 만들고자 합니다. 인터페이스 너머, 사람의 맥락을 이해하는 기술을 추구합니다.',
+    buttonText: '깃허브',
+  },
+};
 
 export default function Home() {
   const container = useRef<HTMLElement | null>(null);
   const textRef = useRef<HTMLDivElement | null>(null);
+  const titleRef = useRef<HTMLHeadingElement | null>(null);
+  const descriptionRef = useRef<HTMLParagraphElement | null>(null);
+  const buttonRef = useRef<HTMLDivElement | null>(null);
   const pathRef = useRef<SVGPathElement | null>(null);
-  const vector6Ref = useRef<SVGPathElement>(null);
-  const vector7Ref = useRef<SVGPathElement>(null);
+  const articlesSectionRef = useRef<HTMLElement | null>(null);
+  const articlesTitleRef = useRef<HTMLHeadingElement | null>(null);
 
-  // useGSAP(
-  //   () => {
-  //     if (!pathRef.current) return;
+  const [currentLanguage, setCurrentLanguage] = useState<Language>('en');
 
-  //     const pathLength = pathRef.current.getTotalLength();
+  // 커스텀 훅으로 아티클 데이터 관리 (홈페이지용: 3개 제한)
+  const { articles, loading: articlesLoading } = useArticles({
+    limit: 3,
+    featured: true, // 추천 글 우선, 부족하면 최신 글로 채움
+  });
 
-  //     gsap.set(pathRef.current, {
-  //       strokeDasharray: pathLength,
-  //       strokeDashoffset: pathLength,
-  //     });
+  const toggleLanguage = () => {
+    setCurrentLanguage((prev) => (prev === 'en' ? 'ko' : 'en'));
+  };
 
-  //     gsap.to(pathRef.current, {
-  //       strokeDashoffset: 0,
-  //       duration: 2,
-  //       ease: 'power2.inOut',
-  //       repeat: -1,
-  //       repeatDelay: 1,
-  //     });
-  //   },
-  //   { scope: container },
-  // );
+  useGSAP(
+    () => {
+      if (!titleRef.current || !descriptionRef.current || !buttonRef.current) return;
+
+      // 초기 상태 설정
+      gsap.set([titleRef.current, descriptionRef.current, buttonRef.current], {
+        y: 50,
+        opacity: 0,
+      });
+
+      // 텍스트 애니메이션 타임라인
+      const tl = gsap.timeline();
+
+      tl.to(titleRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: 'power2.out',
+      })
+        .to(
+          descriptionRef.current,
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power2.out',
+          },
+          '-=0.4',
+        )
+        .to(
+          buttonRef.current,
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.6,
+            ease: 'power2.out',
+          },
+          '-=0.3',
+        );
+    },
+    { scope: container, dependencies: [currentLanguage] },
+  );
+
+  // 아티클 섹션 애니메이션
+  useGSAP(
+    () => {
+      if (!articlesTitleRef.current) return;
+
+      gsap.set(articlesTitleRef.current, {
+        y: 50,
+        opacity: 0,
+      });
+
+      gsap.to(articlesTitleRef.current, {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: articlesSectionRef.current,
+          start: 'top 80%',
+          end: 'bottom 20%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    },
+    { scope: container, dependencies: [currentLanguage] },
+  );
+
+  const currentContent = translations[currentLanguage];
+
+  // 아티클 섹션 텍스트
+  const articlesContent = {
+    en: {
+      title: 'Latest Articles',
+      subtitle: 'Insights and experiences from my development journey',
+    },
+    ko: {
+      title: '최신 아티클',
+      subtitle: '개발 여정에서 얻은 인사이트와 경험들',
+    },
+  };
+
+  const currentArticlesContent = articlesContent[currentLanguage];
 
   return (
     <main ref={container} className="flex flex-col items-start relative overflow-hidden pt-24">
-      <Header />
+      <Header currentLanguage={currentLanguage} onLanguageToggle={toggleLanguage} />
 
       <TimelineAnimation />
       <svg
@@ -62,19 +170,23 @@ export default function Home() {
         />
       </svg>
 
-      <div className="z-50 max-w-5xl w-full md:flex-row items-center md:justify-start gap-16 mx-auto relative mt-5">
+      <div className="z-50 max-w-5xl w-full md:flex-row items-center md:justify-start gap-16 mx-auto relative mt-5 min-h-[500px]">
         <div className="text-black" ref={textRef}>
-          <h1 className="text-6xl font-extrabold mb-8 leading-tight">
-            Beyond Code <br /> Toward Better Lives
+          <h1
+            ref={titleRef}
+            className="text-6xl font-extrabold mb-8 leading-tight whitespace-pre-line h-[200px] flex items-center">
+            {currentContent.title}
           </h1>
         </div>
         <div className="md:w-1/2 md:ml-[50%]">
-          <p className="text-lg font-semibold leading-relaxed mb-6 max-w-lg">
-            I am a human-centered front-end developer. Through development, I strive to ensure that no one is left
-            behind by technology, creating web experiences that make everyone's lives a little better. Beyond
-            interfaces, I pursue technologies that understand the context of people.
+          <p
+            ref={descriptionRef}
+            className="text-lg font-semibold leading-relaxed mb-6 max-w-lg min-h-[180px] flex items-start">
+            {currentContent.description}
           </p>
-          <ExplodeButton>GITHUB</ExplodeButton>
+          <div ref={buttonRef}>
+            <ExplodeButton>{currentContent.buttonText}</ExplodeButton>
+          </div>
         </div>
       </div>
 
@@ -84,6 +196,39 @@ export default function Home() {
 
       <section className="pt-30">
         <FeaturedWork />
+      </section>
+
+      <section ref={articlesSectionRef} className="py-20 z-40 w-full">
+        <div className="max-w-7xl mx-auto px-6">
+          {/* 섹션 헤더 */}
+          <div className="text-center mb-12">
+            <h2 ref={articlesTitleRef} className="text-4xl font-extrabold text-gray-900 mb-4">
+              {currentArticlesContent.title}
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">{currentArticlesContent.subtitle}</p>
+          </div>
+
+          {/* 아티클 리스트 (대표 글 3개) */}
+          {articlesLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+            </div>
+          ) : (
+            <ArticleList articles={articles} currentLanguage={currentLanguage} showSearch={false} variant="grid" />
+          )}
+
+          {/* 더 보기 버튼 */}
+          <div className="text-center mt-12">
+            <a
+              href="/articles"
+              className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-orange-400 to-pink-400 text-white rounded-full hover:from-orange-500 hover:to-pink-500 transition-all duration-300 transform hover:scale-105 font-semibold">
+              {currentLanguage === 'ko' ? '모든 아티클 보기' : 'View All Articles'}
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+          </div>
+        </div>
       </section>
     </main>
   );
