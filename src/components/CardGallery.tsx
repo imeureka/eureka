@@ -13,22 +13,22 @@ const PhotoStack = () => {
     {
       id: 1,
       src: '/images/profile.png',
-      alt: 'Mountain landscape',
+      alt: '한강에서 스윗 1주년 모임',
     },
     {
       id: 2,
       src: '/images/profile2.png',
-      alt: 'Ocean waves',
+      alt: 'SOPT 팀 스윗 최우수상 수상',
     },
     {
       id: 3,
       src: '/images/profile3.png',
-      alt: 'City lights',
+      alt: '구름톤유니브 벚꽃톤 대상(카카오대표이사상) 수상',
     },
     {
       id: 4,
       src: '/images/profile4.png',
-      alt: 'Forest path',
+      alt: '세션 발표 준비를 하고 있는 유신이와 나',
     },
   ]);
 
@@ -141,7 +141,7 @@ const PhotoStack = () => {
 
             {/* 사진 아래 여백 (폴라로이드 스타일) */}
             <div className="absolute bottom-3 left-3 right-3 h-8 bg-white flex items-center justify-center">
-              <span className="text-xs text-gray-600 font-handwriting">Photo {photo.id}</span>
+              <span className="text-xs text-gray-600 font-handwriting">{photo.alt}</span>
             </div>
           </div>
 
