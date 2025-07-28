@@ -39,7 +39,7 @@ const translations: Translations = {
     title: '코드를 넘어\n더 나은 삶을 향해',
     description:
       '저는 사람 중심의 프론트엔드 개발자입니다. 개발을 통해 기술로부터 소외되는 사람이 없도록, 모든 사람의 삶이 조금 더 나아지는 웹 경험을 만들고자 합니다. 인터페이스 너머, 사람의 맥락을 이해하는 기술을 추구합니다.',
-    buttonText: '깃허브',
+    buttonText: 'GITHUB',
   },
 };
 
@@ -154,51 +154,57 @@ export default function Home() {
     <main ref={container} className="flex flex-col items-start relative overflow-hidden pt-24">
       <Header currentLanguage={currentLanguage} onLanguageToggle={toggleLanguage} />
 
-      <TimelineAnimation />
-      <svg
-        width="1202"
-        height="805"
-        viewBox="0 0 1202 805"
-        className="absolute top-0 left-0"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-        <path
-          ref={pathRef}
-          d="M-260 777C-222.167 659.203 -92.8211 438.938 121.897 500.254C390.295 576.898 360.06 588.831 449.836 582.865C597.943 516.776 488.444 369.454 425.648 293.268C362.851 217.083 336.046 138.781 346.57 100.51C362.851 41.3054 420.531 13.7685 644.273 134.472C823.267 231.035 930.968 280.571 962.444 293.268C1010.2 308.872 1141 341 1170 273.5C1196.66 211.441 1094.8 58.5393 858.5 -64"
-          stroke="#FFC28D"
-          strokeWidth={40}
-        />
-      </svg>
+      {/* 홈 섹션 (스크롤 타겟용 ID 추가) */}
+      <section id="home" className="w-full">
+        <TimelineAnimation />
+        <svg
+          width="1202"
+          height="805"
+          viewBox="0 0 1202 805"
+          className="absolute top-0 left-0"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            ref={pathRef}
+            d="M-260 777C-222.167 659.203 -92.8211 438.938 121.897 500.254C390.295 576.898 360.06 588.831 449.836 582.865C597.943 516.776 488.444 369.454 425.648 293.268C362.851 217.083 336.046 138.781 346.57 100.51C362.851 41.3054 420.531 13.7685 644.273 134.472C823.267 231.035 930.968 280.571 962.444 293.268C1010.2 308.872 1141 341 1170 273.5C1196.66 211.441 1094.8 58.5393 858.5 -64"
+            stroke="#FFC28D"
+            strokeWidth={40}
+          />
+        </svg>
 
-      <div className="z-50 max-w-5xl w-full md:flex-row items-center md:justify-start gap-16 mx-auto relative mt-5 min-h-[500px]">
-        <div className="text-black" ref={textRef}>
-          <h1
-            ref={titleRef}
-            className="text-6xl font-extrabold mb-8 leading-tight whitespace-pre-line h-[200px] flex items-center">
-            {currentContent.title}
-          </h1>
-        </div>
-        <div className="md:w-1/2 md:ml-[50%]">
-          <p
-            ref={descriptionRef}
-            className="text-lg font-semibold leading-relaxed mb-6 max-w-lg min-h-[180px] flex items-start">
-            {currentContent.description}
-          </p>
-          <div ref={buttonRef}>
-            <ExplodeButton>{currentContent.buttonText}</ExplodeButton>
+        <div className="z-50 max-w-5xl w-full md:flex-row items-center md:justify-start gap-16 mx-auto relative mt-5 min-h-[500px]">
+          <div className="text-black" ref={textRef}>
+            <h1
+              ref={titleRef}
+              className="text-6xl font-extrabold mb-8 leading-tight whitespace-pre-line h-[200px] flex items-center">
+              {currentContent.title}
+            </h1>
+          </div>
+          <div className="md:w-1/2 md:ml-[50%]">
+            <p
+              ref={descriptionRef}
+              className="text-lg font-semibold leading-relaxed mb-6 max-w-lg min-h-[180px] flex items-start">
+              {currentContent.description}
+            </p>
+            <div ref={buttonRef}>
+              <ExplodeButton onClick={() => window.open('https://github.com/imeureka', '_blank')}>GITHUB</ExplodeButton>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <section>
+      {/* 갤러리 섹션 */}
+      <section id="gallery" className="w-full">
         <CardGallery />
       </section>
 
-      <section className="pt-30">
+      {/* 작업 섹션 (메뉴에서 스크롤할 타겟) */}
+      <section id="featured-work" className="pt-30 w-full">
         <FeaturedWork />
       </section>
 
-      <section ref={articlesSectionRef} className="py-20 z-40 w-full">
+      {/* 아티클 섹션 */}
+      <section ref={articlesSectionRef} id="articles" className="py-20 z-40 w-full">
         <div className="max-w-7xl mx-auto px-6">
           {/* 섹션 헤더 */}
           <div className="text-center mb-12">

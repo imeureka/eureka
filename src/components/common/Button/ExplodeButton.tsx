@@ -15,7 +15,12 @@ const shapes = [
 
 const colors = ['#FF6F00', '#FF8F00', '#FFAB40', '#fff9a0', '#ffdf10', '#ffb53e'];
 
-export default function ExplodeButton({ children }: { children: React.ReactNode }) {
+interface ExplodeButtonProps {
+  children: React.ReactNode;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
+}
+
+export default function ExplodeButton({ children, onClick }: ExplodeButtonProps) {
   const containerRef = useRef<HTMLAnchorElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const numberOfShapes = 10;
@@ -64,11 +69,17 @@ export default function ExplodeButton({ children }: { children: React.ReactNode 
     return () => container.removeEventListener('mouseenter', handleMouseEnter);
   }, []);
 
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault(); // prevent "#" jump
+    onClick?.(e);
+  };
+
   return (
     <a
       ref={containerRef}
       href="#"
-      className="explode-button relative inline-block px-10 py-3 rounded-full border-2 border-white bg-black text-white font-semibold  text-center">
+      onClick={handleClick}
+      className="explode-button relative inline-block px-10 py-3 rounded-full border-2 border-white bg-black text-white font-semibold text-center">
       <p className="relative z-10">{children}</p>
       <svg
         ref={svgRef}
