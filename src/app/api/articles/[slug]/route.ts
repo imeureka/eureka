@@ -18,8 +18,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const possiblePaths = [
       path.join(process.cwd(), 'src/data/articles', `${slug}.${lang}.md`),
       path.join(process.cwd(), 'src/data/articles', `${slug}-${lang}.md`),
-      path.join(process.cwd(), 'data/articles', `${slug}.${lang}.md`), // 백업용
-      path.join(process.cwd(), 'data/articles', `${slug}-${lang}.md`), // 백업용
     ];
 
     console.log('🔍 Trying paths:', possiblePaths);

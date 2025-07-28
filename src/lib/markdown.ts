@@ -83,24 +83,20 @@ export async function getMarkdownContent(slug: string, language: Language): Prom
 }
 
 // 모든 아티클 슬러그 가져오기 (정적 생성용)
+// 예: lib/markdown.ts 또는 lib/articles.ts 안에 있다면
+
 export function getAllArticleSlugs(): string[] {
-  try {
-    const fileNames = fs.readdirSync(articlesDirectory);
-    const slugs = new Set<string>();
+  const articlesDir = path.join(process.cwd(), 'src', 'data', 'articles');
 
-    fileNames.forEach((fileName) => {
-      if (fileName.endsWith('.md')) {
-        // 'article-name.en.md' -> 'article-name'
-        const slug = fileName.replace(/\.(en|ko)\.md$/, '');
-        slugs.add(slug);
-      }
-    });
-
-    return Array.from(slugs);
-  } catch (error) {
-    console.error('Error reading articles directory:', error);
+  if (!fs.existsSync(articlesDir)) {
+    console.warn('📛 Articles directory not found:', articlesDir);
     return [];
   }
+
+  return fs
+    .readdirSync(articlesDir)
+    .filter((file) => file.endsWith('.md'))
+    .map((file) => file.replace(/\.md$/, ''));
 }
 
 // 모든 아티클 목록 가져오기
