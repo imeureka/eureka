@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Article, Language } from '@/types/article';
 import ArticleCard from './ArticleCard';
 import SearchBar from './SearchBar';
@@ -9,95 +9,142 @@ interface ArticleListProps {
   articles: Article[];
   currentLanguage: Language;
   showSearch?: boolean;
-  variant?: 'grid' | 'scroll';
-  maxHeight?: string;
+  variant?: 'grid' | 'list';
 }
 
-export default function ArticleList({
+const ArticleList: React.FC<ArticleListProps> = ({
   articles,
   currentLanguage,
   showSearch = true,
   variant = 'grid',
-  maxHeight = 'none',
-}: ArticleListProps) {
+}) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  // 검색 필터링
+  // 모든 태그 추출
+  const allTags = useMemo(() => {
+    const tags = new Set<string>();
+    articles.forEach((article) => {
+      article.tags.forEach((tag) => tags.add(tag));
+    });
+    return Array.from(tags).sort();
+  }, [articles]);
+
+  // 필터링된 아티클
   const filteredArticles = useMemo(() => {
-    if (!searchQuery.trim()) return articles;
+    if (!showSearch) return articles;
 
     return articles.filter((article) => {
       const title = article.title[currentLanguage].toLowerCase();
       const description = article.description[currentLanguage].toLowerCase();
-      const tags = article.tags.join(' ').toLowerCase();
       const query = searchQuery.toLowerCase();
 
-      return title.includes(query) || description.includes(query) || tags.includes(query);
+      const matchesSearch =
+        title.includes(query) ||
+        description.includes(query) ||
+        article.tags.some((tag) => tag.toLowerCase().includes(query));
+
+      const matchesTags = selectedTags.length === 0 || selectedTags.some((tag) => article.tags.includes(tag));
+
+      return matchesSearch && matchesTags;
     });
-  }, [articles, searchQuery, currentLanguage]);
+  }, [articles, searchQuery, selectedTags, currentLanguage, showSearch]);
 
-  const searchPlaceholder = currentLanguage === 'ko' ? '아티클 검색...' : 'Search articles...';
+  const handleTagToggle = (tag: string) => {
+    setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
+  };
 
-  const noResultsText = currentLanguage === 'ko' ? '검색 결과가 없습니다.' : 'No articles found.';
+  const clearFilters = () => {
+    setSearchQuery('');
+    setSelectedTags([]);
+  };
 
-  const articlesCountText =
-    currentLanguage === 'ko' ? `총 ${filteredArticles.length}개의 아티클` : `${filteredArticles.length} articles`;
+  // 그리드 스타일 결정
+  const getGridClasses = () => {
+    if (variant === 'list') {
+      return 'space-y-6';
+    }
+    // 홈페이지용 그리드 (3개일 때 더 예쁘게)
+    if (filteredArticles.length <= 3) {
+      return 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
+    }
+    return 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8';
+  };
 
   return (
-    <div className="w-full">
-      {/* 검색바 */}
+    <div className={showSearch ? 'max-w-6xl mx-auto px-6' : 'w-full'}>
+      {/* 검색 및 필터 (showSearch가 true일 때만) */}
       {showSearch && (
-        <SearchBar onSearch={setSearchQuery} placeholder={searchPlaceholder} currentLanguage={currentLanguage} />
-      )}
+        <div className="mb-12">
+          <SearchBar
+            onSearch={setSearchQuery}
+            placeholder={currentLanguage === 'ko' ? '아티클 검색...' : 'Search articles...'}
+            currentLanguage={currentLanguage}
+          />
 
-      {/* 결과 개수 */}
-      {showSearch && (
-        <div className="text-center mb-8">
-          <p className="text-gray-600">{articlesCountText}</p>
+          {/* 태그 필터 */}
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold mb-3">
+              {currentLanguage === 'ko' ? '태그로 필터링' : 'Filter by Tags'}
+            </h3>
+            <div className="flex flex-wrap gap-2 mb-4">
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => handleTagToggle(tag)}
+                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                    selectedTags.includes(tag)
+                      ? 'bg-orange-500 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}>
+                  {tag}
+                </button>
+              ))}
+            </div>
+
+            {(searchQuery || selectedTags.length > 0) && (
+              <button onClick={clearFilters} className="text-orange-500 hover:text-orange-600 text-sm">
+                {currentLanguage === 'ko' ? '필터 초기화' : 'Clear Filters'}
+              </button>
+            )}
+          </div>
         </div>
       )}
 
-      {/* 아티클 그리드 */}
+      {/* 검색 결과 카운트 (showSearch가 true일 때만) */}
+      {showSearch && (
+        <div className="mb-6">
+          <p className="text-gray-600">
+            {currentLanguage === 'ko'
+              ? `총 ${filteredArticles.length}개의 아티클`
+              : `${filteredArticles.length} article${filteredArticles.length !== 1 ? 's' : ''} found`}
+          </p>
+        </div>
+      )}
+
+      {/* 아티클 목록 */}
       {filteredArticles.length > 0 ? (
-        <div
-          className={variant === 'scroll' ? 'overflow-y-auto scrollbar-hide' : 'w-full'}
-          style={variant === 'scroll' && maxHeight !== 'none' ? { maxHeight } : {}}>
-          <div
-            className={
-              variant === 'scroll'
-                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-4'
-                : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
-            }>
-            {filteredArticles.map((article) => (
-              <ArticleCard key={article.id} article={article} currentLanguage={currentLanguage} />
-            ))}
-          </div>
+        <div className={getGridClasses()}>
+          {filteredArticles.map((article) => (
+            <ArticleCard key={article.id} article={article} currentLanguage={currentLanguage} />
+          ))}
         </div>
       ) : (
-        <div className="text-center py-16">
-          <div className="text-gray-400 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
+        showSearch && (
+          <div className="text-center py-16">
+            <p className="text-xl text-gray-500 mb-4">
+              {currentLanguage === 'ko' ? '검색 결과가 없습니다' : 'No articles found'}
+            </p>
+            <button
+              onClick={clearFilters}
+              className="px-6 py-3 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors">
+              {currentLanguage === 'ko' ? '전체 아티클 보기' : 'View All Articles'}
+            </button>
           </div>
-          <p className="text-xl text-gray-500">{noResultsText}</p>
-        </div>
+        )
       )}
-
-      <style jsx>{`
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   );
-}
+};
+
+export default ArticleList;
