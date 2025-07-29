@@ -149,11 +149,6 @@ export default function ArticlePage({ params }: ArticlePageProps) {
                 {tag}
               </span>
             ))}
-            {article.featured && (
-              <span className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-sm rounded-full font-medium">
-                ⭐ {currentLanguage === 'ko' ? '추천' : 'Featured'}
-              </span>
-            )}
           </div>
 
           {/* 제목 */}

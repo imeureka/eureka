@@ -69,13 +69,13 @@ export default function ArticlesPage() {
     <main ref={containerRef} className="min-h-screen bg-white pt-24">
       <Header currentLanguage={currentLanguage} onLanguageToggle={toggleLanguage} />
 
-      <div className="max-w-7xl mx-auto px-6 py-16">
+      <div className="max-w-7xl mx-auto px-6 pb-10">
         {/* 페이지 헤더 */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-8">
           <h1 ref={titleRef} className="text-5xl font-extrabold text-gray-900 mb-6">
             {currentContent.title}
           </h1>
-          <p ref={subtitleRef} className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p ref={subtitleRef} className="hidden sm:block text-xl text-gray-600 max-w-3xl mx-auto">
             {currentContent.subtitle}
           </p>
         </div>

@@ -28,7 +28,7 @@ const FlairButton = ({ onClick, className, children }: any) => {
   );
 };
 
-// ProjectModal 업그레이드 - 풍성한 콘텐츠와 GSAP 애니메이션
+// ProjectModal 업그레이드 - 이미지 확대에서 모달로 전환되는 애니메이션
 const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => void }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -63,69 +63,59 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
       gallery: ['/images/skeep0.png', '/images/skeep2.png', '/images/skeep3.png'],
       github: 'https://github.com/S-KEEP/S-KEEP_Front',
     },
-  }[project.id] || { awards: [], skills: [], blogLink: '', gallery: [] };
+  }[project.id] || { awards: [], skills: [], gallery: [] };
 
-  // GSAP 애니메이션
+  // GSAP 애니메이션 - 이미지 확대에서 모달로 부드럽게 전환
   React.useEffect(() => {
     if (!modalRef.current || !overlayRef.current || !contentRef.current) return;
 
-    // 시뮬레이션용 애니메이션 (실제로는 gsap.timeline() 사용)
-    const modal = modalRef.current;
-    const overlay = overlayRef.current;
-    const content = contentRef.current;
+    const tl = gsap.timeline();
 
-    // 초기 상태 설정
-    modal.style.opacity = '0';
-    content.style.transform = 'scale(0.8) translateY(50px)';
-    content.style.opacity = '0';
+    // 초기 설정 - 이미 확대된 상태에서 시작
+    gsap.set(overlayRef.current, { opacity: 0 });
+    gsap.set(contentRef.current, {
+      scale: 1.2,
+      opacity: 0,
+    });
 
     // 애니메이션 실행
-    setTimeout(() => {
-      modal.style.opacity = '1';
-      modal.style.transition = 'opacity 0.3s ease';
-    }, 10);
-
-    setTimeout(() => {
-      content.style.transform = 'scale(1) translateY(0px)';
-      content.style.opacity = '1';
-      content.style.transition = 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
-    }, 100);
-
-    /*
-    const tl = gsap.timeline();
-    
-    gsap.set(contentRef.current, { 
-      scale: 0.8, 
-      y: 50, 
-      opacity: 0 
-    });
-    
-    tl.to(overlayRef.current, { 
-      opacity: 1, 
-      duration: 0.3, 
-      ease: "power2.out" 
-    })
-    .to(contentRef.current, { 
-      scale: 1, 
-      y: 0, 
-      opacity: 1, 
-      duration: 0.4, 
-      ease: "back.out(1.7)" 
-    }, "-=0.1");
-    */
+    tl.to(overlayRef.current, {
+      opacity: 1,
+      duration: 0.4,
+      ease: 'power2.out',
+    }).to(
+      contentRef.current,
+      {
+        scale: 1,
+        opacity: 1,
+        duration: 0.6,
+        ease: 'back.out(1.2)',
+      },
+      '-=0.2',
+    );
   }, []);
 
   const handleClose = () => {
-    // 닫기 애니메이션 (실제로는 gsap 사용)
-    if (contentRef.current) {
-      contentRef.current.style.transform = 'scale(0.8) translateY(50px)';
-      contentRef.current.style.opacity = '0';
-      contentRef.current.style.transition = 'all 0.3s ease';
-    }
+    if (!contentRef.current || !overlayRef.current) return;
 
-    setTimeout(() => {
-      onClose();
-    }, 300);
+    const tl = gsap.timeline({
+      onComplete: onClose,
+    });
+
+    tl.to(contentRef.current, {
+      scale: 0.8,
+      opacity: 0,
+      duration: 0.3,
+      ease: 'power2.in',
+    }).to(
+      overlayRef.current,
+      {
+        opacity: 0,
+        duration: 0.2,
+        ease: 'power2.in',
+      },
+      '-=0.1',
+    );
   };
 
   return (
@@ -160,8 +150,14 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
 
         <div className="p-6 space-y-8">
           {/* 메인 이미지 */}
-          <div className="w-full h-64 md:h-80 rounded-xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-            <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+          <div className="w-full h-auto">
+            <Image
+              src={project.image}
+              alt={project.title}
+              width={800}
+              height={450}
+              className="w-full h-auto object-contain"
+            />
           </div>
 
           {/* 프로젝트 소개 */}
@@ -208,18 +204,7 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
 
           {/* 프로젝트 갤러리 */}
           <div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-              <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center mr-3">
-                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              프로젝트 갤러리
-            </h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">프로젝트 갤러리</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {projectDetails.gallery.map((image, index) => (
                 <div
@@ -274,8 +259,44 @@ export default function FeaturedWork() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  const handleOpen = (project: Project) => setSelectedProject(project);
-  const handleClose = () => setSelectedProject(null);
+  // 이미지 확대 애니메이션을 위한 ref
+  const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const handleOpen = (project: Project, projectIndex: number) => {
+    const imageEl = imageRefs.current[projectIndex];
+    if (!imageEl) {
+      setSelectedProject(project);
+      return;
+    }
+
+    // 이미지 확대 애니메이션
+    const tl = gsap.timeline({
+      onComplete: () => {
+        // 애니메이션 완료 후 모달 오픈
+        setSelectedProject(project);
+        // 원래 크기로 복구
+        gsap.to(imageEl, {
+          scale: 1,
+          duration: 0.1,
+          ease: 'power2.out',
+        });
+      },
+    });
+
+    tl.to(imageEl, {
+      scale: 1.5,
+      duration: 0.4,
+      ease: 'power2.out',
+    }).to(imageEl, {
+      scale: 3,
+      duration: 0.5,
+      ease: 'power2.inOut',
+    });
+  };
+
+  const handleClose = () => {
+    setSelectedProject(null);
+  };
 
   // 모바일 감지 및 리사이즈 핸들러
   React.useEffect(() => {
@@ -306,7 +327,7 @@ export default function FeaturedWork() {
         '웹뷰로 구성된 할 일을 타이머로 해치우고, 문득 생각나는 할 일들을 그때 그때 놓치지 않고 기록하는 서비스를 개발했습니다',
       tech: ['React', 'ReactNative', 'TypeScript', 'Tailwind CSS'],
       image: '/images/project2.png',
-      link: 'https://apps.apple.com/kr/app/%EB%A8%BC%EC%A7%80%EC%B9%98%EC%9A%B0%EA%B8%B0-%ED%83%80%EC%9D%B4%EB%A8%B8-%ED%95%A0-%EC%9D%BC-%EC%A7%91%EC%A4%91/id6748334514', // ✅ 추가
+      link: 'https://apps.apple.com/kr/app/%EB%A8%BC%EC%A7%80%EC%B9%98%EC%9A%B0%EA%B8%B0-%ED%83%80%EC%9D%B4%EB%A8%B8-%ED%95%A0-%EC%9D%BC-%EC%A7%91%EC%A4%91/id6748334514',
     },
     {
       id: 3,
@@ -319,7 +340,7 @@ export default function FeaturedWork() {
     },
   ];
 
-  // 🖥️ 데스크탑용 GSAP 애니메이션 (두 번째 코드에서 가져옴)
+  // 🖥️ 데스크탑용 GSAP 애니메이션
   useGSAP(() => {
     // 모바일일 때는 모든 ScrollTrigger 정리하고 리턴
     if (isMobile) {
@@ -344,7 +365,7 @@ export default function FeaturedWork() {
         end: () => '+=' + (panels.length - 1) * window.innerWidth,
         snap: {
           snapTo: (progress) => {
-            const firstPanelThreshold = 0.8 / (projects.length - 1); // 약 20% 이하일 때
+            const firstPanelThreshold = 0.8 / (projects.length - 1);
             if (progress < firstPanelThreshold) return 0;
             return Math.round(progress * (projects.length - 1)) / (projects.length - 1);
           },
@@ -363,7 +384,7 @@ export default function FeaturedWork() {
   }, [isMobile, projects.length]);
 
   if (isMobile) {
-    // 📱 모바일: 첫 번째 코드의 단순한 가로 스크롤
+    // 📱 모바일: 기존 방식 유지
     return (
       <>
         <section className="w-full py-8 px-4 relative z-20">
@@ -391,14 +412,14 @@ export default function FeaturedWork() {
                     </div>
                   </div>
 
-                  {/* 프로젝트 정보 - 더 컴팩트하게 */}
+                  {/* 프로젝트 정보 */}
                   <div className="p-4">
                     <h3 className="text-base font-bold text-gray-900 mb-2 leading-tight line-clamp-2">
                       {project.title}
                     </h3>
                     <p className="text-sm text-gray-700 leading-relaxed mb-3">{project.description}</p>
 
-                    {/* 기술 스택 - 더 간소하게 */}
+                    {/* 기술 스택 */}
                     <div className="mb-3">
                       <div className="flex flex-wrap gap-1">
                         {project.tech.slice(0, 2).map((tech, techIndex) => (
@@ -416,10 +437,10 @@ export default function FeaturedWork() {
                       </div>
                     </div>
 
-                    {/* 액션 버튼 - 더 작게 */}
+                    {/* 액션 버튼 */}
                     <div className="flex gap-2">
                       <button
-                        onClick={() => handleOpen(project)}
+                        onClick={() => handleOpen(project, index)}
                         className="flex-1 bg-black text-white px-3 py-2 rounded-full font-semibold text-xs hover:bg-gray-800 active:scale-95 transition-all">
                         보기
                       </button>
@@ -450,7 +471,7 @@ export default function FeaturedWork() {
     );
   }
 
-  // 🖥️ 데스크탑: 두 번째 코드의 GSAP ScrollTrigger 방식 그대로
+  // 🖥️ 데스크탑: GSAP ScrollTrigger 방식
   return (
     <>
       <section className="w-full py-12 md:py-24 px-4 md:px-8 relative z-20">
@@ -462,8 +483,12 @@ export default function FeaturedWork() {
                 <div className="max-w-6xl mx-auto w-full h-full flex flex-col lg:grid lg:grid-cols-2 gap-8 md:gap-16 items-center justify-center">
                   {/* 프로젝트 이미지 */}
                   <div className="relative w-full max-w-md lg:max-w-none order-1 lg:order-none">
-                    <div className="w-full aspect-[16/9] relative ">
-                      <Image src={project.image} alt={project.title} fill className="rounded-2xl object-contain" />
+                    <div
+                      ref={(el) => {
+                        imageRefs.current[index] = el;
+                      }}
+                      className="w-full aspect-[16/9] relative overflow-hidden rounded-2xl">
+                      <Image src={project.image} alt={project.title} fill className="object-contain" />
                     </div>
 
                     {/* 프로젝트 번호 */}
@@ -502,7 +527,7 @@ export default function FeaturedWork() {
                     {/* 액션 버튼 */}
                     <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4 md:pt-8 justify-center lg:justify-start">
                       <FlairButton
-                        onClick={() => handleOpen(project)}
+                        onClick={() => handleOpen(project, index)}
                         className="bg-black text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold hover:bg-gray-800 transition-colors text-sm md:text-base">
                         View Project
                       </FlairButton>
@@ -551,9 +576,9 @@ export default function FeaturedWork() {
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
-        .line-clamp-3 {
+        .line-clamp-2 {
           display: -webkit-box;
-          -webkit-line-clamp: 3;
+          -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
