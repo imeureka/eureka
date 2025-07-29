@@ -2,6 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react';
 import FlairButton from './common/Button/FlairButton';
+import RippleButton from './common/Button/RippleButton';
+import Button from './common/Button/Button';
+import ThemeToggle from './ThemeToggle';
+import SimpleThemeToggle from './SimpleThemeToggle';
 
 type Language = 'en' | 'ko';
 
@@ -96,15 +100,15 @@ export default function Header({ currentLanguage, onLanguageToggle }: HeaderProp
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 ${isMobile ? 'px-4 py-4' : 'px-8 py-6'} flex justify-between items-center transition-all duration-300`}>
+        className={`fixed top-0 left-0 right-0 z-120 ${isMobile ? 'px-4 py-4' : 'px-8 py-6'} flex justify-between items-center transition-all duration-300`}>
         {/* 왼쪽: 번역기 버튼 */}
-        <FlairButton
+        <Button
           onClick={onLanguageToggle}
-          className={`bg-black text-white rounded-full transition-colors duration-300 font-medium ${
+          className={`bg-black text-white rounded-full  font-medium ${
             isMobile ? 'px-3 py-2 text-xs' : 'px-4 py-2 text-sm'
           }`}>
           {currentLanguage === 'en' ? '한국어' : 'English'}
-        </FlairButton>
+        </Button>
 
         {/* 오른쪽: 기존 버튼들 */}
         <div className={`flex ${isMobile ? 'space-x-2' : 'space-x-4'}`}>

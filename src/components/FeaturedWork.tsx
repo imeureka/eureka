@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import Image from 'next/image';
+import FlairButton from './common/Button/FlairButton';
 
 // GSAP 플러그인 등록
 gsap.registerPlugin(ScrollTrigger);
@@ -19,16 +20,7 @@ interface Project {
   date: string;
 }
 
-// FlairButton 시뮬레이션
-const FlairButton = ({ onClick, className, children }: any) => {
-  return (
-    <button onClick={onClick} className={`transition-all duration-300 ${className}`}>
-      {children}
-    </button>
-  );
-};
-
-// ProjectModal 업그레이드 - 이미지 확대에서 모달로 전환되는 애니메이션
+// ProjectModal 업그레이드 - 다크 모드 적용
 const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => void }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -40,7 +32,7 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
       awards: ['구름톤유니브 벚꽃톤 대상 - 카카오대표이사상', '구름톤 유니브 인 제주 최우수상'],
       skills: ['React', 'TypeScript', 'TanStack Query', 'Styled Components'],
       blogLink:
-        'https://velog.io/@imeureka/Kakao-x-Goorm-%EA%B5%AC%EB%A6%84%ED%86%A4-%EC%9C%A0%EB%8B%88%EB%B8%8C-2%EA%B8%B0-%EB%B2%9A%EA%BD%83%ED%86%A4-%EB%8C%80%EC%83%81-%ED%9A%8C%EA%B3%A0',
+        'https://velog.io/@imeureka/Kakao-x-Goorm-%EA%B5%AC%EB%A6%84%ED%86%A4-%EC%9C%A0%EB%8B%88%EB%B8%8C-2%EA%B8%B0-%EB%B2%9A%EA%BD%83%ED%86%A0-%EB%8C%80%EC%83%81-%ED%9A%8C%EA%B3%A0',
       gallery: [
         'https://velog.velcdn.com/images/imeureka/post/2c894438-2ccd-4868-bdac-0deda70a8b6f/image.jpeg',
         'https://velog.velcdn.com/images/imeureka/post/e9ee4927-ecab-4263-9797-594c01027877/image.jpeg',
@@ -119,26 +111,30 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
   };
 
   return (
-    <div ref={modalRef} className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div ref={modalRef} className="fixed inset-0 z-150 flex items-center justify-center p-4">
       {/* 오버레이 */}
       <div ref={overlayRef} className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
 
-      {/* 모달 컨텐츠 */}
+      {/* 모달 컨텐츠 - 다크 모드 적용 */}
       <div
         ref={contentRef}
-        className="relative bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        {/* 헤더 */}
-        <div className="sticky top-0 bg-white/95 backdrop-blur-md z-10 px-6 py-4 border-b border-gray-100">
+        className="relative bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl transition-colors duration-300">
+        {/* 헤더 - 다크 모드 적용 */}
+        <div className="sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-10 px-6 py-4 border-b border-gray-100 dark:border-gray-700 transition-colors duration-300">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{project.title}</h2>
-              <p className="text-sm text-gray-500 mt-1">{project.date}</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
+                {project.title}
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 transition-colors duration-300">
+                {project.date}
+              </p>
             </div>
             <button
               onClick={handleClose}
-              className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors group">
+              className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center transition-colors group">
               <svg
-                className="w-5 h-5 text-gray-600 group-hover:text-gray-800"
+                className="w-5 h-5 text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white transition-colors"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24">
@@ -160,22 +156,28 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
             />
           </div>
 
-          {/* 프로젝트 소개 */}
+          {/* 프로젝트 소개 - 다크 모드 적용 */}
           <div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">프로젝트 소개</h3>
-            <p className="text-gray-700 leading-relaxed text-base">{project.description}</p>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center transition-colors duration-300">
+              프로젝트 소개
+            </h3>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base transition-colors duration-300">
+              {project.description}
+            </p>
           </div>
 
-          {/* 스킬 및 수상이력 */}
+          {/* 스킬 및 수상이력 - 다크 모드 적용 */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* 기술 스택 */}
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">기술 스택</h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center transition-colors duration-300">
+                기술 스택
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {[...projectDetails.skills].map((skill, index) => (
                   <span
                     key={index}
-                    className="px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium border border-blue-200">
+                    className="px-3 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-sm font-medium border border-blue-200 dark:border-blue-800 transition-colors duration-300">
                     {skill}
                   </span>
                 ))}
@@ -185,16 +187,20 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
             {/* 수상이력 */}
             {projectDetails.awards && projectDetails.awards.filter(Boolean).length > 0 && (
               <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">수상이력</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center transition-colors duration-300">
+                  수상이력
+                </h3>
                 <div className="space-y-2">
                   {projectDetails.awards
                     .filter((award) => award.trim() !== '')
                     .map((award, index) => (
                       <div
                         key={index}
-                        className="flex items-center p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                        <div className="w-2 h-2 bg-yellow-400 rounded-full mr-3" />
-                        <span className="text-yellow-800 font-medium text-sm">{award}</span>
+                        className="flex items-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800 transition-colors duration-300">
+                        <div className="w-2 h-2 bg-yellow-400 dark:bg-yellow-500 rounded-full mr-3" />
+                        <span className="text-yellow-800 dark:text-yellow-300 font-medium text-sm transition-colors duration-300">
+                          {award}
+                        </span>
                       </div>
                     ))}
                 </div>
@@ -202,14 +208,16 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
             )}
           </div>
 
-          {/* 프로젝트 갤러리 */}
+          {/* 프로젝트 갤러리 - 다크 모드 적용 */}
           <div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">프로젝트 갤러리</h3>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center transition-colors duration-300">
+              프로젝트 갤러리
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {projectDetails.gallery.map((image, index) => (
                 <div
                   key={index}
-                  className="aspect-video rounded-lg overflow-hidden bg-gray-100 hover:scale-105 transition-transform duration-300 cursor-pointer">
+                  className="aspect-video rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 hover:scale-105 transition-transform duration-300 cursor-pointer">
                   <img
                     src={image}
                     alt={`${project.title} 스크린샷 ${index + 1}`}
@@ -220,12 +228,12 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
             </div>
           </div>
 
-          {/* 관련 블로그글 & 액션 버튼 */}
-          <div className="border-t border-gray-200 pt-6">
+          {/* 관련 블로그글 & 액션 버튼 - 다크 모드 적용 */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6 transition-colors duration-300">
             <div className="flex flex-col md:flex-row gap-4">
               <button
                 onClick={() => window.open(projectDetails.blogLink, '_blank')}
-                className="flex-1 bg-black text-white px-6 py-4 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
+                className="flex-1 bg-black dark:bg-white text-white dark:text-black px-6 py-4 rounded-xl font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
                 </svg>
@@ -234,7 +242,7 @@ const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => v
               {projectDetails.github && (
                 <button
                   onClick={() => window.open(projectDetails.github, '_blank')}
-                  className="flex-1 border-2 border-gray-300 text-gray-700 px-6 py-4 rounded-xl font-semibold hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
+                  className="flex-1 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-4 rounded-xl font-semibold hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
@@ -384,13 +392,17 @@ export default function FeaturedWork() {
   }, [isMobile, projects.length]);
 
   if (isMobile) {
-    // 📱 모바일: 기존 방식 유지
+    // 📱 모바일: 기존 방식 유지 - 다크 모드 적용
     return (
       <>
-        <section className="w-full py-8 px-4 relative z-20">
+        <section className="w-full py-8 px-4 relative z-20  transition-colors duration-300">
           <div className="text-center mb-6 mt-20">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Featured Work</h2>
-            <div className="text-center mt-4 text-xs text-gray-500">← 좌우로 스와이프하세요 →</div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">
+              Featured Work
+            </h2>
+            <div className="text-center mt-4 text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
+              ← 좌우로 스와이프하세요 →
+            </div>
           </div>
 
           <div className="w-full">
@@ -402,22 +414,24 @@ export default function FeaturedWork() {
               {projects.map((project, index) => (
                 <div
                   key={project.id}
-                  className="flex-shrink-0 w-80 bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 snap-start">
+                  className="flex-shrink-0 w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 snap-start transition-colors duration-300">
                   {/* 프로젝트 이미지 */}
-                  <div className="relative aspect-video bg-gradient-to-br from-gray-100 to-gray-200">
+                  <div className="relative aspect-video bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
                     <Image src={project.image} alt={project.title} fill className="w-full h-full object-cover" />
                     {/* 프로젝트 번호 */}
-                    <div className="absolute top-3 left-3 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-sm font-bold">
+                    <div className="absolute top-3 left-3 w-8 h-8 bg-black dark:bg-white text-white dark:text-black rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-300">
                       {String(index + 1).padStart(2, '0')}
                     </div>
                   </div>
 
                   {/* 프로젝트 정보 */}
                   <div className="p-4">
-                    <h3 className="text-base font-bold text-gray-900 mb-2 leading-tight line-clamp-2">
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2 leading-tight line-clamp-2 transition-colors duration-300">
                       {project.title}
                     </h3>
-                    <p className="text-sm text-gray-700 leading-relaxed mb-3">{project.description}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-3 transition-colors duration-300">
+                      {project.description}
+                    </p>
 
                     {/* 기술 스택 */}
                     <div className="mb-3">
@@ -425,12 +439,12 @@ export default function FeaturedWork() {
                         {project.tech.slice(0, 2).map((tech, techIndex) => (
                           <span
                             key={techIndex}
-                            className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
+                            className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full text-xs font-medium transition-colors duration-300">
                             {tech}
                           </span>
                         ))}
                         {project.tech.length > 2 && (
-                          <span className="px-2 py-1 bg-gray-100 text-gray-500 rounded-full text-xs">
+                          <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full text-xs transition-colors duration-300">
                             +{project.tech.length - 2}
                           </span>
                         )}
@@ -441,13 +455,13 @@ export default function FeaturedWork() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleOpen(project, index)}
-                        className="flex-1 bg-black text-white px-3 py-2 rounded-full font-semibold text-xs hover:bg-gray-800 active:scale-95 transition-all">
+                        className="flex-1 bg-black dark:bg-gray-100 text-white dark:text-black px-3 py-2 rounded-full font-semibold text-xs hover:bg-gray-800 dark:hover:bg-gray-200 active:scale-95 transition-all">
                         보기
                       </button>
                       {project.link && (
                         <button
                           onClick={() => window.open(project.link, '_blank')}
-                          className="flex-1 border border-black text-black px-3 py-2 rounded-full font-semibold text-xs hover:bg-black hover:text-white active:scale-95 transition-all">
+                          className="flex-1 border border-black dark:border-white text-black dark:text-white px-3 py-2 rounded-full font-semibold text-xs hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black active:scale-95 transition-all">
                           Demo
                         </button>
                       )}
@@ -460,7 +474,10 @@ export default function FeaturedWork() {
             {/* 인디케이터 */}
             <div className="flex justify-center gap-2 mt-4">
               {projects.map((_, index) => (
-                <div key={index} className="w-2 h-2 bg-gray-300 rounded-full" />
+                <div
+                  key={index}
+                  className="w-2 h-2 bg-gray-300 dark:bg-gray-600 rounded-full transition-colors duration-300"
+                />
               ))}
             </div>
           </div>
@@ -471,10 +488,10 @@ export default function FeaturedWork() {
     );
   }
 
-  // 🖥️ 데스크탑: GSAP ScrollTrigger 방식
+  // 🖥️ 데스크탑: GSAP ScrollTrigger 방식 - 다크 모드 적용
   return (
     <>
-      <section className="w-full py-12 md:py-24 px-4 md:px-8 relative z-20">
+      <section className="w-full py-12 md:py-24 px-4 md:px-8 relative z-20 bg-white dark:bg-gray-900 transition-colors duration-300">
         {/* 수평 스크롤 컨테이너 */}
         <div ref={containerRef} className="container relative w-full h-screen overflow-hidden">
           <div ref={panelsRef} className="flex w-fit h-full" style={{ width: `${projects.length * 100}vw` }}>
@@ -492,7 +509,7 @@ export default function FeaturedWork() {
                     </div>
 
                     {/* 프로젝트 번호 */}
-                    <div className="absolute -top-2 -left-2 md:-top-4 md:-left-4 w-12 h-12 md:w-16 md:h-16 bg-black text-white rounded-full flex items-center justify-center text-lg md:text-2xl font-bold">
+                    <div className="absolute -top-2 -left-2 md:-top-4 md:-left-4 w-12 h-12 md:w-16 md:h-16 bg-black dark:bg-white text-white dark:text-black rounded-full flex items-center justify-center text-lg md:text-2xl font-bold transition-colors duration-300">
                       {String(index + 1).padStart(2, '0')}
                     </div>
                   </div>
@@ -500,24 +517,24 @@ export default function FeaturedWork() {
                   {/* 프로젝트 정보 */}
                   <div className="space-y-4 md:space-y-8 text-center lg:text-left order-2 lg:order-none w-full px-2 md:px-0">
                     <div>
-                      <h3 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-black mb-3 md:mb-6 leading-tight">
+                      <h3 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-gray-900 dark:text-white mb-3 md:mb-6 leading-tight transition-colors duration-300">
                         {project.title}
                       </h3>
-                      <p className="text-sm md:text-base lg:text-lg text-gray-700 leading-relaxed mb-4 md:mb-8">
+                      <p className="text-sm md:text-base lg:text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-4 md:mb-8 transition-colors duration-300">
                         {project.description}
                       </p>
                     </div>
 
                     {/* 기술 스택 */}
                     <div>
-                      <h4 className="text-xs md:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 md:mb-4">
+                      <h4 className="text-xs md:text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 md:mb-4 transition-colors duration-300">
                         Tech Stack
                       </h4>
                       <div className="flex flex-wrap gap-2 md:gap-3 justify-center lg:justify-start">
                         {project.tech.map((tech, techIndex) => (
                           <span
                             key={techIndex}
-                            className="px-3 py-1.5 md:px-4 md:py-2 bg-gray-100 text-gray-800 rounded-full text-xs md:text-sm font-medium hover:bg-gray-200 transition-colors">
+                            className="px-3 py-1.5 md:px-4 md:py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full text-xs md:text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                             {tech}
                           </span>
                         ))}
@@ -528,13 +545,13 @@ export default function FeaturedWork() {
                     <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4 md:pt-8 justify-center lg:justify-start">
                       <FlairButton
                         onClick={() => handleOpen(project, index)}
-                        className="bg-black text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold hover:bg-gray-800 transition-colors text-sm md:text-base">
+                        className="bg-black dark:bg-white text-white dark:text-black px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors text-sm md:text-base">
                         View Project
                       </FlairButton>
                       {project.link && (
                         <button
                           onClick={() => window.open(project.link, '_blank')}
-                          className="border-2 border-black text-black px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold hover:bg-black hover:text-white transition-colors text-sm md:text-base">
+                          className="border-2 border-black dark:border-white text-black dark:text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-colors text-sm md:text-base">
                           Live Demo
                         </button>
                       )}
@@ -549,16 +566,19 @@ export default function FeaturedWork() {
         {/* 스크롤 인디케이터 */}
         <div className="fixed bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-30">
           {projects.map((_, index) => (
-            <div key={index} className="w-2 h-2 bg-gray-400 rounded-full opacity-50" />
+            <div
+              key={index}
+              className="w-2 h-2 bg-gray-400 dark:bg-gray-600 rounded-full opacity-50 transition-colors duration-300"
+            />
           ))}
         </div>
 
         {/* 스크롤 힌트 */}
-        <div className="fixed bottom-6 md:bottom-8 right-4 md:right-8 text-gray-500 text-xs md:text-sm z-30">
+        <div className="fixed bottom-6 md:bottom-8 right-4 md:right-8 text-gray-500 dark:text-gray-400 text-xs md:text-sm z-30 transition-colors duration-300">
           <div className="flex items-center gap-2">
             <span className="hidden sm:inline">Scroll to explore</span>
             <span className="sm:hidden">Scroll</span>
-            <div className="w-5 h-5 md:w-6 md:h-6 border border-gray-400 rounded-full flex items-center justify-center text-xs md:text-sm">
+            <div className="w-5 h-5 md:w-6 md:h-6 border border-gray-400 dark:border-gray-600 rounded-full flex items-center justify-center text-xs md:text-sm transition-colors duration-300">
               →
             </div>
           </div>
