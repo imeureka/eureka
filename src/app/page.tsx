@@ -13,7 +13,6 @@ import TimelineAnimation from '@/components/TimelineAnimation';
 import ArticleList from '@/components/ArticleList';
 import { useArticles } from '@/hooks/useArticles';
 import ParticleBackground from '@/components/ParticleBackground';
-import CareerTimeline from '@/components/CareerTimeline';
 
 gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
 
