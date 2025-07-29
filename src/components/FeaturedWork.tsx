@@ -491,7 +491,7 @@ export default function FeaturedWork() {
   // 🖥️ 데스크탑: GSAP ScrollTrigger 방식 - 다크 모드 적용
   return (
     <>
-      <section className="w-full py-12 md:py-24 px-4 md:px-8 relative z-20 bg-white dark:bg-gray-900 transition-colors duration-300">
+      <section className="w-full py-12 md:py-24 px-4 md:px-8 relative z-20  transition-colors duration-300">
         {/* 수평 스크롤 컨테이너 */}
         <div ref={containerRef} className="container relative w-full h-screen overflow-hidden">
           <div ref={panelsRef} className="flex w-fit h-full" style={{ width: `${projects.length * 100}vw` }}>
