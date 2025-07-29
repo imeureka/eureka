@@ -4,8 +4,6 @@ import React, { useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import ProjectModal from './ProjectModal';
-import FlairButton from './common/Button/FlairButton';
 
 // GSAP 플러그인 등록
 gsap.registerPlugin(ScrollTrigger);
@@ -19,16 +17,50 @@ interface Project {
   link?: string;
 }
 
+// FlairButton 시뮬레이션
+const FlairButton = ({ onClick, className, children }: any) => {
+  return (
+    <button onClick={onClick} className={`transition-all duration-300 ${className}`}>
+      {children}
+    </button>
+  );
+};
+
+// ProjectModal 시뮬레이션
+const ProjectModal = ({ project, onClose }: { project: Project; onClose: () => void }) => {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">{project.title}</h2>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 text-2xl">
+              ×
+            </button>
+          </div>
+          <img src={project.image} alt={project.title} className="w-full h-48 object-cover rounded mb-4" />
+          <p className="text-gray-700 mb-4">{project.description}</p>
+          <div className="flex flex-wrap gap-2">
+            {project.tech.map((tech, index) => (
+              <span key={index} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function FeaturedWork() {
   const containerRef = useRef<HTMLDivElement>(null);
   const panelsRef = useRef<HTMLDivElement>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const handleOpen = (project: Project) => setSelectedProject(project);
   const handleClose = () => setSelectedProject(null);
-
-  // 프로젝트 데이터
-  const [isMobile, setIsMobile] = useState(false);
 
   // 모바일 감지 및 리사이즈 핸들러
   React.useEffect(() => {
@@ -67,15 +99,21 @@ export default function FeaturedWork() {
     },
   ];
 
+  // 🖥️ 데스크탑용 GSAP 애니메이션 (두 번째 코드에서 가져옴)
   useGSAP(() => {
+    // 모바일일 때는 모든 ScrollTrigger 정리하고 리턴
+    if (isMobile) {
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      return;
+    }
+
     if (!containerRef.current || !panelsRef.current) return;
 
     const panels = gsap.utils.toArray('.panel');
-
     if (panels.length === 0) return;
 
     // 수평 스크롤 애니메이션
-    gsap.to(panels, {
+    const animation = gsap.to(panels, {
       xPercent: -100 * (panels.length - 1),
       ease: 'none',
       scrollTrigger: {
@@ -100,97 +138,95 @@ export default function FeaturedWork() {
 
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      animation.kill();
     };
-  }, []);
+  }, [isMobile, projects.length]);
 
   if (isMobile) {
-    // 모바일 레이아웃 - 수평 스크롤 + 카드 디자인
+    // 📱 모바일: 첫 번째 코드의 단순한 가로 스크롤
     return (
       <>
-        <section className="w-full py-12 px-4 sm:px-6 relative z-20">
-          {/* 수평 스크롤 컨테이너 */}
-          <div ref={containerRef} className="container relative w-full h-screen overflow-hidden">
-            <div ref={panelsRef} className="flex w-fit h-full" style={{ width: `${projects.length * 100}vw` }}>
+        <section className="w-full py-8 px-4 relative z-20">
+          <div className="text-center mb-6 mt-20">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Featured Work</h2>
+            <div className="text-center mt-4 text-xs text-gray-500">← 좌우로 스와이프하세요 →</div>
+          </div>
+
+          <div className="w-full">
+            <div
+              className="flex gap-4 pb-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide"
+              style={{
+                WebkitOverflowScrolling: 'touch',
+              }}>
               {projects.map((project, index) => (
                 <div
                   key={project.id}
-                  className="panel w-[calc(100vw-32px)] h-full flex items-center justify-center px-4">
-                  <div className="max-w-sm mx-auto">
-                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-                      {/* 프로젝트 이미지 */}
-                      <div className="relative aspect-video bg-gradient-to-br from-gray-100 to-gray-200">
-                        <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-                        {/* 프로젝트 번호 */}
-                        <div className="absolute top-4 left-4 w-10 h-10 sm:w-12 sm:h-12 bg-black text-white rounded-full flex items-center justify-center text-lg sm:text-xl font-bold">
-                          {String(index + 1).padStart(2, '0')}
-                        </div>
+                  className="flex-shrink-0 w-80 bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 snap-start">
+                  {/* 프로젝트 이미지 */}
+                  <div className="relative aspect-video bg-gradient-to-br from-gray-100 to-gray-200">
+                    <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                    {/* 프로젝트 번호 */}
+                    <div className="absolute top-3 left-3 w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-sm font-bold">
+                      {String(index + 1).padStart(2, '0')}
+                    </div>
+                  </div>
+
+                  {/* 프로젝트 정보 - 더 컴팩트하게 */}
+                  <div className="p-4">
+                    <h3 className="text-base font-bold text-gray-900 mb-2 leading-tight line-clamp-2">
+                      {project.title}
+                    </h3>
+                    <p className="text-sm text-gray-700 leading-relaxed mb-3">{project.description}</p>
+
+                    {/* 기술 스택 - 더 간소하게 */}
+                    <div className="mb-3">
+                      <div className="flex flex-wrap gap-1">
+                        {project.tech.slice(0, 2).map((tech, techIndex) => (
+                          <span
+                            key={techIndex}
+                            className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
+                            {tech}
+                          </span>
+                        ))}
+                        {project.tech.length > 2 && (
+                          <span className="px-2 py-1 bg-gray-100 text-gray-500 rounded-full text-xs">
+                            +{project.tech.length - 2}
+                          </span>
+                        )}
                       </div>
+                    </div>
 
-                      {/* 프로젝트 정보 */}
-                      <div className="p-6 sm:p-8">
-                        <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 leading-tight">
-                          {project.title}
-                        </h3>
-                        <p className="text-sm sm:text-base text-gray-700 leading-relaxed mb-6">{project.description}</p>
-
-                        {/* 기술 스택 */}
-                        <div className="mb-6">
-                          <h4 className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                            Tech Stack
-                          </h4>
-                          <div className="flex flex-wrap gap-2">
-                            {project.tech.map((tech, techIndex) => (
-                              <span
-                                key={techIndex}
-                                className="px-3 py-1.5 bg-gray-100 text-gray-800 rounded-full text-xs sm:text-sm font-medium">
-                                {tech}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* 액션 버튼 */}
-                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                          <button
-                            onClick={() => handleOpen(project)}
-                            className="flex-1 bg-black text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 active:bg-gray-800 transition-colors text-sm sm:text-base active:scale-95">
-                            프로젝트 보기
-                          </button>
-                          <button className="flex-1 border-2 border-black text-black px-6 py-3 rounded-full font-semibold hover:bg-black hover:text-white active:bg-black active:text-white transition-colors text-sm sm:text-base active:scale-95">
-                            Live Demo
-                          </button>
-                        </div>
-                      </div>
+                    {/* 액션 버튼 - 더 작게 */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleOpen(project)}
+                        className="flex-1 bg-black text-white px-3 py-2 rounded-full font-semibold text-xs hover:bg-gray-800 active:scale-95 transition-all">
+                        보기
+                      </button>
+                      <button className="flex-1 border border-black text-black px-3 py-2 rounded-full font-semibold text-xs hover:bg-black hover:text-white active:scale-95 transition-all">
+                        Demo
+                      </button>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
 
-          {/* 스크롤 인디케이터 */}
-          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 z-30">
-            {projects.map((_, index) => (
-              <div key={index} className="w-2 h-2 bg-gray-400 rounded-full opacity-50" />
-            ))}
-          </div>
-
-          {/* 모바일 스크롤 힌트 */}
-          <div className="fixed bottom-6 right-6 bg-black text-white px-3 py-2 rounded-full text-xs z-30 opacity-75">
-            <div className="flex items-center gap-1">
-              <span>스크롤</span>
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
+            {/* 인디케이터 */}
+            <div className="flex justify-center gap-2 mt-4">
+              {projects.map((_, index) => (
+                <div key={index} className="w-2 h-2 bg-gray-300 rounded-full" />
+              ))}
             </div>
           </div>
         </section>
+
         {selectedProject && <ProjectModal project={selectedProject} onClose={handleClose} />}
       </>
     );
   }
 
-  // 데스크톱 레이아웃 - 수평 스크롤
+  // 🖥️ 데스크탑: 두 번째 코드의 GSAP ScrollTrigger 방식 그대로
   return (
     <>
       <section className="w-full py-12 md:py-24 px-4 md:px-8 relative z-20">
@@ -275,7 +311,25 @@ export default function FeaturedWork() {
           </div>
         </div>
       </section>
+
       {selectedProject && <ProjectModal project={selectedProject} onClose={handleClose} />}
+
+      {/* CSS */}
+      <style jsx>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .line-clamp-3 {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      `}</style>
     </>
   );
 }
