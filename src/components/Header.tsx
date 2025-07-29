@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import FlairButton from './common/Button/FlairButton';
 
 type Language = 'en' | 'ko';
 
@@ -8,15 +9,6 @@ interface HeaderProps {
   currentLanguage: Language;
   onLanguageToggle: () => void;
 }
-
-// FlairButton 컴포넌트를 여기서 정의
-const FlairButton = ({ onClick, className, children, flairColor }: any) => {
-  return (
-    <button onClick={onClick} className={`relative overflow-hidden transition-all duration-300 ${className}`}>
-      <span className="relative z-10">{children}</span>
-    </button>
-  );
-};
 
 export default function Header({ currentLanguage, onLanguageToggle }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -118,7 +110,7 @@ export default function Header({ currentLanguage, onLanguageToggle }: HeaderProp
         <div className={`flex ${isMobile ? 'space-x-2' : 'space-x-4'}`}>
           <FlairButton
             className={`bg-gradient-to-r from-orange-300 to-pink-300 border-none text-white hover:text-black transition-all duration-300 ${
-              isMobile ? 'px-3 py-2 text-xs rounded-full' : 'px-4 py-2 text-sm rounded-full'
+              isMobile ? 'px-3 py-2 text-xs rounded-full' : 'px-4 py-2 text-2xl rounded-full'
             }`}
             flairColor="bg-orange-500">
             {isMobile ? 'TALK' : "LET'S TALK"}
@@ -126,10 +118,10 @@ export default function Header({ currentLanguage, onLanguageToggle }: HeaderProp
           <FlairButton
             onClick={toggleMenu}
             className={`bg-gradient-to-r from-pink-300 to-orange-300 border-none text-white hover:text-black transition-all duration-300 ${
-              isMobile ? 'px-3 py-2 text-xs rounded-full' : 'px-4 py-2 text-sm rounded-full'
+              isMobile ? 'px-3 py-2 text-xs rounded-full' : 'px-4 py-2 text-2xl rounded-full'
             }`}
             flairColor="bg-orange-500">
-            {isMenuOpen ? (currentLanguage === 'ko' ? 'CLOSE' : 'CLOSE') : 'MENU'}
+            {isMenuOpen ? (currentLanguage === 'ko' ? 'MENU' : 'MENU') : 'MENU'}
           </FlairButton>
         </div>
       </header>
@@ -160,7 +152,7 @@ export default function Header({ currentLanguage, onLanguageToggle }: HeaderProp
             <div key={index} className="overflow-hidden">
               <button
                 onClick={item.action}
-                className={`group block text-white font-black leading-none tracking-tight hover:text-transparent bg-clip-text hover:bg-gradient-to-r hover:from-orange-400 hover:to-pink-400 transition-all duration-500 transform hover:scale-110 ${
+                className={`group block text-white font-black leading-none tracking-tight hover:text-orange-300 bg-clip-text hover:bg-gradient-to-r hover:from-orange-400 hover:to-pink-400 transition-all duration-500 transform hover:scale-110 ${
                   isMobile ? 'text-4xl' : 'text-6xl md:text-8xl'
                 }`}>
                 <span className="z-50 inline-block transition-transform duration-300 group-hover:translate-y-[-5px]">
@@ -190,13 +182,6 @@ export default function Header({ currentLanguage, onLanguageToggle }: HeaderProp
             style={{ animationDelay: '1s' }}
           />
         </div>
-
-        {/* 모바일에서만 보이는 추가 안내 */}
-        {isMobile && (
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
-            <p className="text-white/60 text-sm text-center">Tap to navigate</p>
-          </div>
-        )}
       </div>
     </>
   );
