@@ -264,9 +264,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           {/* 섹션 헤더 */}
           <div className="text-center mb-8 md:mb-12">
-            <h2
-              ref={articlesTitleRef}
-              className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4 transition-colors duration-300">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4 transition-colors duration-300">
               {currentArticlesContent.title}
             </h2>
             <p className="text-base md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto px-4 md:px-0 transition-colors duration-300">
