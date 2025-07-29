@@ -17,29 +17,53 @@ export default function TimelineAnimation() {
   useEffect(() => {
     if (!containerRef.current || !mainPathRef.current || !movingBallRef.current) return;
 
-    // GSAP 기본 설정
-    gsap.defaults({ ease: 'none' });
+    const pathElement = mainPathRef.current;
+    const ballElement = movingBallRef.current;
 
-    // 메인 타임라인 애니메이션
-    gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          scrub: true,
-          start: 'top top',
-          end: 'bottom top',
-        },
+    // 🎯 Home과 같은 방식으로 초기 설정
+    gsap.set(pathElement, {
+      drawSVG: '0%', // 명확한 초기값
+    });
+
+    gsap.set(ballElement, {
+      autoAlpha: 0,
+    });
+
+    // 🚀 Home과 같은 방식으로 애니메이션
+    const mainTimeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.current,
+        scrub: true,
+        start: 'top top',
+        end: 'bottom top',
+      },
+    });
+
+    mainTimeline
+      // 볼을 보이게 함
+      .to(ballElement, {
+        duration: 0.01,
+        autoAlpha: 1,
       })
-      .to(movingBallRef.current, { duration: 0.01, autoAlpha: 1 })
-      .from(mainPathRef.current, { drawSVG: 0 }, 0)
+      // 🎨 DrawSVG - Home과 같은 방식 사용
       .to(
-        movingBallRef.current,
+        pathElement,
+        {
+          drawSVG: '100%', // from이 아닌 to 사용
+          ease: 'none',
+        },
+        0,
+      )
+      // 볼 움직임
+      .to(
+        ballElement,
         {
           motionPath: {
-            path: mainPathRef.current,
-            align: mainPathRef.current,
+            path: pathElement,
+            align: pathElement,
             alignOrigin: [0.5, 0.5],
           },
+          ease: 'none',
         },
         0,
       );
@@ -47,6 +71,7 @@ export default function TimelineAnimation() {
     // 정리
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      mainTimeline.kill();
     };
   }, []);
 
@@ -57,7 +82,7 @@ export default function TimelineAnimation() {
         viewBox="0 0 1761 1211"
         preserveAspectRatio="xMidYMid slice"
         xmlns="http://www.w3.org/2000/svg">
-        {/* 메인 곡선 경로만 */}
+        {/* 메인 곡선 경로 */}
         <path
           ref={mainPathRef}
           stroke="#FFC28D"
@@ -65,12 +90,20 @@ export default function TimelineAnimation() {
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"
-          opacity="0.6"
+          className="dark:stroke-orange-400 transition-colors duration-300"
+          style={{ opacity: 0.6 }}
           d="M1728 33L1635.17 427.789C1586.28 553.745 1433.21 762.795 1212.06 591.344C990.919 419.893 1096.67 332.082 1198.22 333.962C1247.11 326.443 1411.77 397.334 1511.06 546.225C1610.35 695.117 1618.76 843.941 1618.76 870.26C1618.76 990.576 1585.53 1173.38 1386.95 1177.89C1138.72 1183.53 1082.31 974.853 952.557 1076.37C822.803 1177.89 817.162 1177.89 755.106 1177.89C693.05 1177.89 676.126 1076.37 591.504 1076.37C506.882 1076.37 258.658 1093.29 258.658 929.735C258.658 798.89 108.219 649.622 33.0001 591.344"
         />
 
-        {/* 움직이는 볼만 */}
-        <circle ref={movingBallRef} fill="#FBBF24" r="12" cx="100" cy="200" style={{ visibility: 'hidden' }}>
+        {/* 움직이는 볼 */}
+        <circle
+          ref={movingBallRef}
+          fill="#FBBF24"
+          className="dark:fill-yellow-400"
+          r="12"
+          cx="1728"
+          cy="33"
+          style={{ visibility: 'hidden' }}>
           <animate attributeName="r" values="12;16;12" dur="2s" repeatCount="indefinite" />
         </circle>
 
@@ -97,9 +130,6 @@ export default function TimelineAnimation() {
       <style jsx>{`
         circle {
           filter: url(#ballGlow);
-        }
-        path {
-          filter: url(#pathGlow);
         }
       `}</style>
     </div>

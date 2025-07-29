@@ -34,11 +34,6 @@ export default function ArticleCard({ article, currentLanguage }: ArticleCardPro
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          {article.featured && (
-            <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-400 to-pink-400 text-white px-3 py-1 rounded-full text-sm font-medium">
-              {currentLanguage === 'ko' ? '추천' : 'Featured'}
-            </div>
-          )}
         </div>
 
         {/* 콘텐츠 */}
