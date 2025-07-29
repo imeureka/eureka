@@ -133,7 +133,7 @@ export default function Header({ currentLanguage, onLanguageToggle }: HeaderProp
       {/* 풀스크린 메뉴 오버레이 */}
       <div
         ref={menuOverlayRef}
-        className="fixed inset-0 z-100 items-center justify-center hidden"
+        className="fixed inset-0 z-121 items-center justify-center hidden"
         style={{ display: 'none' }}>
         {/* 메뉴 배경 */}
         <div
