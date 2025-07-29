@@ -6,6 +6,7 @@ module.exports = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './src/**/*.{js,ts,jsx,tsx,mdx}', // src 폴더 사용 시
   ],
+  darkMode: 'class', // 'class' 전략 사용
   theme: {
     extend: {
       // 기존 설정들...

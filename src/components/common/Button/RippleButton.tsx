@@ -158,9 +158,7 @@ const GSAPRippleButton = React.forwardRef<HTMLButtonElement, GSAPRippleButtonPro
           ref={hoverRippleRef}
           className={cn(
             'absolute inset-0 rounded-full',
-            variant === 'primary'
-              ? 'bg-gradient-to-r from-blue-600 to-purple-600'
-              : 'bg-gradient-to-r from-slate-300 to-slate-400',
+            variant === 'primary' ? 'bg-black' : 'bg-gradient-to-r from-slate-300 to-slate-400',
           )}
         />
 

@@ -193,20 +193,20 @@ export default function Home() {
         </svg>
 
         <div className="z-50 max-w-5xl w-full px-4 md:px-0 md:flex-row items-center md:justify-start gap-8 md:gap-16 mx-auto relative mt-5 min-h-[00px] md:min-h-[500px]">
-          {/* 텍스트 콘텐츠 */}
-          <div className="text-black w-full" ref={textRef}>
+          {/* 텍스트 콘텐츠 - 다크 모드 스타일 추가 */}
+          <div className="text-black dark:text-white w-full transition-colors duration-300" ref={textRef}>
             {/* 제목 */}
             <h1
               ref={titleRef}
-              className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-extrabold mb-6 md:mb-8 leading-tight whitespace-pre-line min-h-[120px] md:h-[200px] flex items-center text-left">
+              className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-extrabold mb-6 md:mb-8 leading-tight whitespace-pre-line min-h-[120px] md:h-[200px] flex items-center text-left text-gray-900 dark:text-white">
               {currentContent.title}
             </h1>
 
-            {/* 설명과 버튼을 모바일에서는 중앙 정렬 */}
+            {/* 설명과 버튼 */}
             <div className="w-full md:w-1/2 md:ml-[50%] flex flex-col items-start">
               <p
                 ref={descriptionRef}
-                className="text-sm sm:text-base md:text-lg font-semibold leading-relaxed mb-6 max-w-lg min-h-[120px] md:min-h-[180px] text-left">
+                className="text-sm sm:text-base md:text-lg font-semibold leading-relaxed mb-6 max-w-lg min-h-[120px] md:min-h-[180px] text-left text-gray-700 dark:text-gray-300 transition-colors duration-300">
                 {currentContent.description}
               </p>
 
@@ -235,10 +235,12 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           {/* 섹션 헤더 */}
           <div className="text-center mb-8 md:mb-12">
-            <h2 ref={articlesTitleRef} className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+            <h2
+              ref={articlesTitleRef}
+              className="text-2xl  sm:text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
               {currentArticlesContent.title}
             </h2>
-            <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto px-4 md:px-0">
+            <p className="text-base md:text-xl text-gray-600 dark:text-white max-w-2xl mx-auto px-4 md:px-0">
               {currentArticlesContent.subtitle}
             </p>
           </div>
